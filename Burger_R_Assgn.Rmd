@@ -1,0 +1,258 @@
+---
+title: "BCB546_R_Assignment"
+author: "Issi Burger"
+date: "2023-03-10"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(ggplot2)
+library(magrittr)
+```
+
+
+
+```{r}
+fang_genotype <- read_tsv("https://github.com/EEOB-BioData/BCB546_Spring2023/blob/main/assignments/UNIX_Assignment/fang_et_al_genotypes.txt?raw=true")
+fang_genotype <- as.data.frame(fang_genotype)
+snp_position <- read_tsv("https://github.com/EEOB-BioData/BCB546_Spring2023/raw/main/assignments/UNIX_Assignment/snp_position.txt")
+snp_position <- as.data.frame(snp_position[,c(1,3:4)])
+```
+
+The code above loads the two files for this assignment into R. I also cut the columns needed from the snp_position.txt.
+
+
+```{r}
+ncol(fang_genotype) 
+nrow(fang_genotype) 
+str(fang_genotype)
+```
+
+The code above describes the fang_genotype.txt docuemnt. There are 986 columns and 2782 rows in this data set. All variables in this data set are classified as characters. 
+
+```{r}
+ncol(snp_position) 
+nrow(snp_position) 
+str(snp_position)
+```
+
+The code above describes the snp_position.txt docuemnt. There are 15 columns and 983 rows in this data set. Nine of the variables are structured as characters (SNP_ID, Chromosome, Position, alt_pos, mult_positions, amplicon, cdv_map_feature.name, gene, and candidate/random), and six variables are numerical (cdv_marker_id, Genaissance_daa_id, count_amplicons, count_cmf, and count_gene). 
+
+
+
+```{r}
+maize <- subset(fang_genotype, fang_genotype$Group==c("ZMMIL","ZMMLR","ZMMMR"))
+maize_transpose <- as.data.frame(t(maize))
+maize_transpose <- maize_transpose %>%
+  rownames_to_column(var = "SNP_ID")
+maize_transpose <- row_to_names(maize_transpose, 1, remove_rows_above = TRUE) %>%
+  rename("SNP_ID" = "Sample_ID")
+maize_combined <- inner_join(snp_position, maize_transpose, by = "SNP_ID")
+maize_combined$Position <- as.numeric(maize_combined$Position)
+
+maize_increasing_chr <- function(x) {
+  subset(maize_combined, maize_combined$Chromosome==x) %>%
+    arrange(Position)
+}
+
+maize_decreasing_chr <- function(x) {
+  subset(maize_combined, maize_combined$Chromosome==x) %>%
+    arrange(desc(Position))
+}
+
+
+
+maize_chr1_increasing <- maize_increasing_chr(1)
+write.table(maize_chr1_increasing, file = "maize_chr1_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr2_increasing <- maize_increasing_chr(2)
+write.table(maize_chr2_increasing, file = "maize_chr2_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr3_increasing <- maize_increasing_chr(3)
+write.table(maize_chr3_increasing, file = "maize_chr3_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr4_increasing <- maize_increasing_chr(4)
+write.table(maize_chr4_increasing, file = "maize_chr4_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr5_increasing <- maize_increasing_chr(5)
+write.table(maize_chr5_increasing, file = "maize_chr5_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr6_increasing <- maize_increasing_chr(6)
+write.table(maize_chr6_increasing, file = "maize_chr6_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr7_increasing <- maize_increasing_chr(7)
+write.table(maize_chr7_increasing, file = "maize_chr7_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr8_increasing <- maize_increasing_chr(8)
+write.table(maize_chr8_increasing, file = "maize_chr8_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr9_increasing <- maize_increasing_chr(9)
+write.table(maize_chr9_increasing, file = "maize_chr9_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr10_increasing <- maize_increasing_chr(10)
+write.table(maize_chr10_increasing, file = "maize_chr10_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+
+
+maize_chr1_decreasing <- maize_decreasing_chr(1) 
+maize_chr1_decreasing[maize_chr1_decreasing == "?/?"] <- "-/-"
+write.table(maize_chr1_decreasing, file = "maize_chr1_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr2_decreasing <- maize_decreasing_chr(2) 
+maize_chr2_decreasing[maize_chr2_decreasing == "?/?"] <- "-/-"
+write.table(maize_chr2_decreasing, file = "maize_chr2_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr3_decreasing <- maize_decreasing_chr(3) 
+maize_chr3_decreasing[maize_chr3_decreasing == "?/?"] <- "-/-"
+write.table(maize_chr3_decreasing, file = "maize_chr3_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr4_decreasing <- maize_decreasing_chr(4) 
+maize_chr4_decreasing[maize_chr4_decreasing == "?/?"] <- "-/-"
+write.table(maize_chr4_decreasing, file = "maize_chr4_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr5_decreasing <- maize_decreasing_chr(5) 
+maize_chr5_decreasing[maize_chr5_decreasing == "?/?"] <- "-/-"
+write.table(maize_chr5_decreasing, file = "maize_chr5_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr6_decreasing <- maize_decreasing_chr(6) 
+maize_chr6_decreasing[maize_chr6_decreasing == "?/?"] <- "-/-"
+write.table(maize_chr6_decreasing, file = "maize_chr6_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr7_decreasing <- maize_decreasing_chr(7) 
+maize_chr7_decreasing[maize_chr7_decreasing == "?/?"] <- "-/-"
+write.table(maize_chr7_decreasing, file = "maize_chr7_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr8_decreasing <- maize_decreasing_chr(8) 
+maize_chr8_decreasing[maize_chr8_decreasing == "?/?"] <- "-/-"
+write.table(maize_chr8_decreasing, file = "maize_chr8_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr9_decreasing <- maize_decreasing_chr(9) 
+maize_chr9_decreasing[maize_chr9_decreasing == "?/?"] <- "-/-"
+write.table(maize_chr9_decreasing, file = "maize_chr9_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+maize_chr10_decreasing <- maize_decreasing_chr(10) 
+maize_chr10_decreasing[maize_chr10_decreasing == "?/?"] <- "-/-"
+write.table(maize_chr10_decreasing, file = "maize_chr10_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+
+```
+
+The code above first subsets the maize data from the fang_genotype file. I then transposed the dataset, switching the rows and columns. After that, I use the code "rownames_to_column" to change the row names into the first column and "row_to_names" to change the first row to column names. Lastly, I renamed "Sample_ID" to "SNP_ID" in order to combine the two data sets, which I do using "inner_join". I then created two functions for subsetting maize data by chromosome number, one for increasing and one for decreasing position number. For increasing position number, I ran this function 10 times for the 10 chromosomes, then used "write.table" to turn these lists into documents. For decreasing position number, I ran the decreasing function 10 times for the 10 chromosomes, then changed all "?" to "-". I then used "write.table" to turn these lists into documents.
+
+
+
+```{r}
+teosinte <- subset(fang_genotype, fang_genotype$Group==c("ZMPBA", "ZMPIL", "ZMPJA"))
+teosinte_transpose <- as.data.frame(t(teosinte))
+teosinte_transpose <- teosinte_transpose %>%
+  rownames_to_column(var = "SNP_ID")
+teosinte_transpose <- row_to_names(teosinte_transpose, 1, remove_rows_above = TRUE) %>%
+  rename("SNP_ID" = "Sample_ID")
+teosinte_combined <- inner_join(snp_position, teosinte_transpose, by = "SNP_ID")
+teosinte_combined$Position <- as.numeric(teosinte_combined$Position)
+
+teosinte_increasing_chr <- function(x) {
+  subset(teosinte_combined, teosinte_combined$Chromosome==x) %>%
+    arrange(Position)
+}
+
+teosinte_decreasing_chr <- function(x) {
+  subset(teosinte_combined, teosinte_combined$Chromosome==x) %>%
+    arrange(desc(Position))
+}
+
+
+teosinte_chr1_increasing <- teosinte_increasing_chr(1)
+write.table(teosinte_chr1_increasing, file = "teosinte_chr1_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr2_increasing <- teosinte_increasing_chr(2)
+write.table(teosinte_chr2_increasing, file = "teosinte_chr2_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr3_increasing <- teosinte_increasing_chr(3)
+write.table(teosinte_chr3_increasing, file = "teosinte_chr3_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr4_increasing <- teosinte_increasing_chr(4)
+write.table(teosinte_chr4_increasing, file = "teosinte_chr4_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr5_increasing <- teosinte_increasing_chr(5)
+write.table(teosinte_chr5_increasing, file = "teosinte_chr5_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr6_increasing <- teosinte_increasing_chr(6)
+write.table(teosinte_chr6_increasing, file = "teosinte_chr6_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr7_increasing <- teosinte_increasing_chr(7)
+write.table(teosinte_chr7_increasing, file = "teosinte_chr7_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr8_increasing <- teosinte_increasing_chr(8)
+write.table(teosinte_chr8_increasing, file = "teosinte_chr8_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr9_increasing <- teosinte_increasing_chr(9)
+write.table(teosinte_chr9_increasing, file = "teosinte_chr9_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr10_increasing <- teosinte_increasing_chr(10)
+write.table(teosinte_chr10_increasing, file = "teosinte_chr10_increasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+
+
+teosinte_chr1_decreasing <- teosinte_decreasing_chr(1) 
+teosinte_chr1_decreasing[teosinte_chr1_decreasing == "?/?"] <- "-/-"
+write.table(teosinte_chr1_decreasing, file = "teosinte_chr1_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr2_decreasing <- teosinte_decreasing_chr(2) 
+teosinte_chr2_decreasing[teosinte_chr2_decreasing == "?/?"] <- "-/-"
+write.table(teosinte_chr2_decreasing, file = "teosinte_chr2_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr3_decreasing <- teosinte_decreasing_chr(3) 
+teosinte_chr3_decreasing[teosinte_chr3_decreasing == "?/?"] <- "-/-"
+write.table(teosinte_chr3_decreasing, file = "teosinte_chr3_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr4_decreasing <- teosinte_decreasing_chr(4) 
+teosinte_chr4_decreasing[teosinte_chr4_decreasing == "?/?"] <- "-/-"
+write.table(teosinte_chr4_decreasing, file = "teosinte_chr4_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr5_decreasing <- teosinte_decreasing_chr(5) 
+teosinte_chr5_decreasing[teosinte_chr5_decreasing == "?/?"] <- "-/-"
+write.table(teosinte_chr5_decreasing, file = "teosinte_chr5_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr6_decreasing <- teosinte_decreasing_chr(6) 
+teosinte_chr6_decreasing[teosinte_chr6_decreasing == "?/?"] <- "-/-"
+write.table(teosinte_chr6_decreasing, file = "teosinte_chr6_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr7_decreasing <- teosinte_decreasing_chr(7) 
+teosinte_chr7_decreasing[teosinte_chr7_decreasing == "?/?"] <- "-/-"
+write.table(teosinte_chr7_decreasing, file = "teosinte_chr7_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr8_decreasing <- teosinte_decreasing_chr(8) 
+teosinte_chr8_decreasing[teosinte_chr8_decreasing == "?/?"] <- "-/-"
+write.table(teosinte_chr8_decreasing, file = "teosinte_chr8_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr9_decreasing <- teosinte_decreasing_chr(9) 
+teosinte_chr9_decreasing[teosinte_chr9_decreasing == "?/?"] <- "-/-"
+write.table(teosinte_chr9_decreasing, file = "teosinte_chr9_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+teosinte_chr10_decreasing <- teosinte_decreasing_chr(10) 
+teosinte_chr10_decreasing[teosinte_chr10_decreasing == "?/?"] <- "-/-"
+write.table(teosinte_chr10_decreasing, file = "teosinte_chr10_decreasing", quote = FALSE, sep = "\t", row.names = FALSE, col.names = TRUE)
+```
+
+The code above first subsets the teosinte data from the fang_genotype file. I then transpose the dataset, switching the rows and columns. After that, I use the code "rownames_to_column" to change the row names into the first column and "row_to_names" to change the first row to column names. Lastly, I renamed "Sample_ID" to "SNP_ID" in order to combine the two data sets, which I do using "inner_join". I then created two functions for subsetting teosinte data by chromosome number, one for increasing and one for decreasing position number. For increasing position number, I ran this function 10 times for the 10 chromosomes, then used "write.table" to turn these lists into documents. For decreasing position number, I ran the decreasing function 10 times for the 10 chromosomes, then changed all "?" to "-". I then used "write.table" to turn these lists into documents.
+
+```{r}
+
+#editing data
+maize_pivot <- maize_combined %>% 
+  pivot_longer(cols = !1:3, names_to = "ID")
+
+maize_pivot$zygosity <- ifelse(maize_pivot$value %in% c("A/A","G/G", "T/T", "C/C"), "homozygous", 
+                               ifelse(maize_pivot$value %in% c("?/?"), "unknown", "heterozygous"))
+
+teosinte_pivot <- teosinte_combined %>% 
+  pivot_longer(cols = !1:3, names_to = "ID")
+
+teosinte_pivot$zygosity <- ifelse(teosinte_pivot$value %in% c("A/A","G/G", "T/T", "C/C"), "homozygous", 
+                               ifelse(teosinte_pivot$value %in% c("?/?"), "unknown", "heterozygous")) 
+
+
+maize_pivot$species <- "maize"
+teosinte_pivot$species <- "teosinte"
+complete<- rbind(maize_pivot, teosinte_pivot)
+
+#SNPs per chromosome
+ggplot(maize_pivot, aes(x = Chromosome, y = Position)) + 
+  geom_point(color = "orange")
+
+ggplot(teosinte_pivot, aes (x = Chromosome, y = Position)) + 
+  geom_point(color = "green")
+
+ggplot(complete, aes (x = Chromosome, y = Position)) + 
+  geom_point() + 
+  facet_wrap(~species)
+
+#Missing data and amount of heterozygosity
+
+ggplot(maize_pivot) +
+  geom_bar(aes(x = Chromosome, fill = zygosity), position = "fill") 
+
+ggplot(teosinte_pivot) +
+  geom_bar(aes(x = Chromosome, fill = zygosity), position = "fill")
+
+ggplot(complete) + 
+  geom_bar(aes(x = Chromosome, fill = zygosity), position = "fill") + 
+  facet_wrap(~species)
+
+
+#Your own visualization
+
+ggplot(complete) + 
+  geom_density(aes(x = Position, linetype = species)) + 
+  facet_wrap(~value)
+
+ggplot(complete) +
+  geom_bar(aes(x = Chromosome, fill = value), position = "dodge", color = "black") + 
+  facet_wrap(~species)
+```
+
+I started off this section with editing my data frames in order to visualize the data. I pivoted the maize and teosinte columns and then added a new column specifying whether a site was homozygous, heterozygous, or unknown. I also added a column in both data frames specifying if the values were "maize" or "teosinte" and then combined the two frames into one. I then used this combined frame to look at the SNP positions across chromosomes and to look at the missing data and amount of heterozygosity. For my own visualization, I created a graph that looks at the density of each site across SNP positions separated by maize or teosinte. I made a second plot that compares the number of sites within and across chromosomes separated by species. 
