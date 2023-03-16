@@ -13,9 +13,7 @@ library(magrittr)
 ```  
 
 Error in library(janitor) : there is no package called ‘janitor’
-
-
-
+I got this error when trying to run this first chunk, not quite sure what might be the reason. I ran install.packages("janitor") followed by library(janitor) and it worked fine after
 
 
 
